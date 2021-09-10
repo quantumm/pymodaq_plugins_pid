@@ -157,7 +157,7 @@ def main():
     win.resize(1000, 500)
     win.setWindowTitle('PyMoDAQ Viewer')
     prog = DAQ_Viewer(area, title="Testing", DAQ_type='DAQ2D')
-    prog.detector = 'MockPID'
+    prog.detector = 'BeamSteering'
     prog.init_det()
     prog.settings.child('detector_settings', 'x0').show()
     prog.settings.child('detector_settings', 'y0').show()
