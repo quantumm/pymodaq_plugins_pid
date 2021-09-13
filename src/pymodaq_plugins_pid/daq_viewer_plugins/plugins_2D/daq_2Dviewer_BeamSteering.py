@@ -136,14 +136,10 @@ class DAQ_2DViewer_BeamSteering(DAQ_Viewer_base):
         data[data < 0] = 0
         y, x = center_of_mass(data)
         QThread.msleep(100)
-        self.data_grabed_signal.emit([DataFromPlugins(name='Mock2DPID', data=[image], dim='Data2D'),
-                                      DataFromPlugins(name='Mock0DPID', data=[np.array([x]), np.array([y])],
-                                                      dim='Data0D',
-                                                      labels=['x0', 'y0']),])
+        self.data_grabed_signal.emit([DataFromPlugins(name='Mock2DPID', data=[image], dim='Data2D'),])
 
 
     def stop(self):
-
         return ""
 
 def main():
