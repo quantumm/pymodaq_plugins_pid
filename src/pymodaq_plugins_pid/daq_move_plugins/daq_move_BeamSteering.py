@@ -161,7 +161,7 @@ class DAQ_Move_BeamSteering(DAQ_Move_base):
         position = self.check_bound(self.current_position + position) - self.current_position
         self.target_position = position + self.current_position
 
-        self.controller.move_abs(self.target_position, self.settings.child('multiaxes', 'axis').value())
+        self.controller.move_rel(position, self.settings.child('multiaxes', 'axis').value())
         self.poll_moving()
 
     def move_Home(self):
