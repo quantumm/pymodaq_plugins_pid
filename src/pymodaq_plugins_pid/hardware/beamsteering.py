@@ -7,8 +7,10 @@ class BeamSteeringController:
     axis = ['H', 'V']
     Nx = 256
     Ny = 256
-    offset = 128
-    coeff = 100
+    offset_x = 128
+    offset_y = 128
+    coeff = 0.01
+    drift = False
 
     def __init__(self, positions=None, wh=(40, 50), noise=0.1, amp=10):
         super().__init__()
@@ -22,7 +24,7 @@ class BeamSteeringController:
         self.amp = amp
         self.noise = noise
         self.wh = wh
-
+        self.data_mock = None
 
     def check_position(self, axis):
         return self.current_positions[axis]
@@ -45,11 +47,23 @@ class BeamSteeringController:
         """
         x_axis = self.get_xaxis()
         y_axis = self.get_yaxis()
+        if self.drift:
+            self.offset_x += 0.1
+            self.offset_y += 0.05
+        self.data_mock = self.gauss2D(x_axis, y_axis,
+                                 self.offset_x + self.coeff * self.current_positions['H'],
+                                 self.offset_y + self.coeff * self.current_positions['V'])
+        return self.data_mock
 
-        data_mock = self.amp * gauss2D(x_axis,
-                                       self.offset + self.coeff * self.current_positions['H'], self.wh[0],
-                                       y_axis,
-                                       self.offset + self.coeff * self.current_positions['V'], self.wh[1], 1) + \
-                    self.noise * np.random.rand(len(y_axis), len(x_axis))
+    def gauss2D(self, x, y, x0, y0):
+        Nx = len(x) if hasattr(x, '__len__') else 1
+        Ny = len(x) if hasattr(y, '__len__') else 1
+        data = self.amp * gauss2D(x, x0, self.wh[0], y, y0, self.wh[1], 1) + self.noise * np.random.rand(Nx, Ny)
 
-        return data_mock
+        return np.squeeze(data)
+
+    def get_data_output(self):
+        if self.data_mock is None:
+            self.set_Mock_data()
+        return self.data_mock[128, 128]
+

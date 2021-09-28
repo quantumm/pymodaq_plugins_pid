@@ -29,7 +29,7 @@ class PIDModelBoiler(PIDModelGeneric):
 
     def ini_model(self):
         super().ini_model()
-        self.pid_controller.module_manager.get_mod_from_name('Thermometer', 'det').\
+        self.pid_controller.modules_manager.get_mod_from_name('Thermometer', 'det').\
             settings.child('main_settings', 'wait_time').setValue(0)
 
     def convert_input(self, measurements):
