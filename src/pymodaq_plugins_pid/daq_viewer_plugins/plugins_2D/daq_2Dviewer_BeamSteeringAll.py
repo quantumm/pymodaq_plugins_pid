@@ -10,7 +10,7 @@ from pymodaq.daq_viewer.utility_classes import comon_parameters
 from pymodaq_plugins_pid.hardware.beamsteering import BeamSteeringController
 from scipy.ndimage.measurements import center_of_mass
 
-class DAQ_2DViewer_BeamSteering(DAQ_Viewer_base):
+class DAQ_2DViewer_BeamSteeringAll(DAQ_Viewer_base):
     """
         =============== ==================
         **Attributes**   **Type**
@@ -133,9 +133,16 @@ class DAQ_2DViewer_BeamSteering(DAQ_Viewer_base):
             --------
             set_Mock_data
         """
-
-        image = self.controller.get_data_output(data_dim='2D')
-        self.data_grabed_signal.emit([DataFromPlugins(name='Mock2DPID', data=[image], dim='Data2D'),])
+        data_2D = self.controller.set_Mock_data()
+        image = self.controller.get_data_output(data=data_2D, data_dim='2D')
+        self.data_grabed_signal.emit([
+            DataFromPlugins(name='Mock2D',
+                            data=[self.controller.get_data_output(data=data_2D, data_dim='2D')], dim='Data2D'),
+            DataFromPlugins(name='Mock1D',
+                            data=[self.controller.get_data_output(data=data_2D, data_dim='1D')], dim='Data1D'),
+            DataFromPlugins(name='Mock0D',
+                            data=[self.controller.get_data_output(data=data_2D, data_dim='0D')],
+                                  dim='Data0D'),])
 
 
     def stop(self):

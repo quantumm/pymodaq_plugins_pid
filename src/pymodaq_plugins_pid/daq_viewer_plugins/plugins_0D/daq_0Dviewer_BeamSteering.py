@@ -2,7 +2,7 @@ from PyQt5.QtCore import QThread
 from PyQt5 import QtWidgets
 import numpy as np
 import pymodaq.daq_utils.daq_utils as mylib
-from pymodaq.daq_viewer.utility_classes import DAQ_Viewer_base
+from pymodaq.daq_viewer.utility_classes import DAQ_Viewer_base, main
 from easydict import EasyDict as edict
 from collections import OrderedDict
 from pymodaq.daq_utils.daq_utils import ThreadCommand, getLineInfo, DataFromPlugins, Axis, my_moment
@@ -100,29 +100,13 @@ class DAQ_0DViewer_BeamSteering(DAQ_Viewer_base):
             set_Mock_data
         """
 
-        data = self.controller.get_data_output()
-        self.data_grabed_signal.emit([DataFromPlugins(name='Mock0DPID', data=[np.array([data])], dim='Data0D'),])
+        data = self.controller.get_data_output(data_dim='0D')
+        self.data_grabed_signal.emit([DataFromPlugins(name='Mock0DPID', data=[data], dim='Data0D'),])
 
 
     def stop(self):
         return ""
 
-def main():
-    import sys
-    from pymodaq.daq_utils.gui_utils import DockArea
-    from pymodaq.daq_viewer.daq_viewer_main import DAQ_Viewer
-    app = QtWidgets.QApplication(sys.argv)
-    win = QtWidgets.QMainWindow()
-    area = DockArea()
-    win.setCentralWidget(area)
-    win.resize(1000, 500)
-    win.setWindowTitle('PyMoDAQ Viewer')
-    prog = DAQ_Viewer(area, title="Testing", DAQ_type='DAQ0D')
-    prog.detector = 'BeamSteering'
-    prog.init_det()
-    win.show()
-    sys.exit(app.exec_())
-
 
 if __name__ == '__main__':
-    main()
+    main(__file__)

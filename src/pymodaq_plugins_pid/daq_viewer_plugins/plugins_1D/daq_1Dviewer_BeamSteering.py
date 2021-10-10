@@ -10,7 +10,7 @@ from pymodaq.daq_viewer.utility_classes import comon_parameters
 from pymodaq_plugins_pid.hardware.beamsteering import BeamSteeringController
 from scipy.ndimage.measurements import center_of_mass
 
-class DAQ_2DViewer_BeamSteering(DAQ_Viewer_base):
+class DAQ_1DViewer_BeamSteering(DAQ_Viewer_base):
     """
         =============== ==================
         **Attributes**   **Type**
@@ -24,27 +24,14 @@ class DAQ_2DViewer_BeamSteering(DAQ_Viewer_base):
         utility_classes.DAQ_Viewer_base
     """
 
-    params = comon_parameters + [
-        {'title': 'Amplitude:', 'name': 'amp', 'type': 'int', 'value': 20, 'default': 20, 'min': 1},
-        {'title': 'dx:', 'name': 'dx', 'type': 'float', 'value': 20, 'default': 20, 'min': 1},
-        {'title': 'dy:', 'name': 'dy', 'type': 'float', 'value': 40, 'default': 40, 'min': 1},
-        {'title': 'Noise level:', 'name': 'noise', 'type': 'float', 'value': 4, 'default': 0.1, 'min': 0},
-        {'title': 'x0:', 'name': 'x0', 'type': 'float', 'value': 128, 'visible': False},
-        {'title': 'y0:', 'name': 'y0', 'type': 'float', 'value': 128, 'visible': False},
-        {'title': 'Threshold', 'name': 'threshold', 'type': 'float', 'value': 4.},
-        {'title': 'Drift', 'name': 'drift', 'type': 'bool', 'value': False}
-    ]
+    params = comon_parameters
 
     def __init__(self, parent=None, params_state=None):
         # init_params is a list of tuple where each tuple contains info on a 1D channel (Ntps,amplitude,
         # width, position and noise)
 
         super().__init__(parent, params_state)
-        self.x_axis = None
-        self.y_axis = None
-        self.live = False
-        self.ind_commit = 0
-        self.ind_data = 0
+
 
     def commit_settings(self, param):
         """
@@ -59,20 +46,7 @@ class DAQ_2DViewer_BeamSteering(DAQ_Viewer_base):
             --------
             set_Mock_data
         """
-        if param.name() == 'amp':
-            self.controller.amp = param.value()
-        elif param.name() == 'dx':
-            self.controller.wh = (param.value(), self.controller.wh[1])
-        elif param.name() == 'dy':
-            self.controller.wh = (self.controller.wh[0], param.value())
-        elif param.name() == 'noise':
-            self.controller.noise = param.value()
-        elif param.name() == 'x0':
-            self.controller.current_positions['H'] = param.value()
-        elif param.name() == 'y0':
-            self.controller.current_positions['V'] = param.value()
-        elif param.name() == 'drift':
-            self.controller.drift = param.value()
+        pass
 
     def ini_detector(self, controller=None):
         """
@@ -91,18 +65,11 @@ class DAQ_2DViewer_BeamSteering(DAQ_Viewer_base):
                 else:
                     self.controller = controller
             else:
-                self.controller = BeamSteeringController(wh=(self.settings.child('dx').value(),
-                                          self.settings.child('dy').value()),
-                                          noise=self.settings.child('noise').value(),
-                                          amp=self.settings.child('amp').value()
-                                          )
+                self.controller = BeamSteeringController()
 
-            self.x_axis = self.controller.get_xaxis()
-            self.y_axis = self.controller.get_yaxis()
 
-            self.status.x_axis = self.x_axis
-            self.status.y_axis = self.y_axis
             self.status.initialized = True
+            self.status.xaxis = self.controller.get_xaxis()
             self.status.controller = self.controller
             return self.status
 
@@ -134,8 +101,8 @@ class DAQ_2DViewer_BeamSteering(DAQ_Viewer_base):
             set_Mock_data
         """
 
-        image = self.controller.get_data_output(data_dim='2D')
-        self.data_grabed_signal.emit([DataFromPlugins(name='Mock2DPID', data=[image], dim='Data2D'),])
+        data = self.controller.get_data_output(data_dim='1D')
+        self.data_grabed_signal.emit([DataFromPlugins(name='Mock1D', data=[data], dim='Data1D'),])
 
 
     def stop(self):

@@ -3,9 +3,9 @@ from scipy.ndimage import center_of_mass
 
 
 class PIDModelBeamSteering(PIDModelGeneric):
-    limits = dict(max=dict(state=True, value=1000),
-                  min=dict(state=True, value=-500),)
-    konstants = dict(kp=50, ki=0.000, kd=0.0000)
+    limits = dict(max=dict(state=True, value=100),
+                  min=dict(state=True, value=-100),)
+    konstants = dict(kp=1, ki=0.000, kd=0.0000)
 
     setpoint_ini = [128, 128]
     setpoints_names = ['Xaxis', 'Yaxis']
@@ -14,7 +14,7 @@ class PIDModelBeamSteering(PIDModelGeneric):
     detectors_name = ['Camera']
 
     Nsetpoints = 2
-    params = [{'title': 'Threshold', 'name': 'threshold', 'type': 'float', 'value': 10.}]
+    params = [{'title': 'Threshold', 'name': 'threshold', 'type': 'float', 'value': 100.}]
 
     def __init__(self, pid_controller):
         super().__init__(pid_controller)
@@ -45,7 +45,8 @@ class PIDModelBeamSteering(PIDModelGeneric):
 
         """
         #print('input conversion done')
-        image = measurements['Camera']['data2D']['Camera_Mock2DPID_CH000']['data']
+        key = list(measurements['Camera']['data2D'].keys())[0]  # so it can also be used from another plugin having another key
+        image = measurements['Camera']['data2D'][key]['data']
         image = image - self.settings.child('threshold').value()
         image[image < 0] = 0
         x, y = center_of_mass(image)

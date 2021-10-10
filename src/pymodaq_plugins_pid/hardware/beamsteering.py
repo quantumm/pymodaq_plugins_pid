@@ -3,8 +3,8 @@ from pymodaq.daq_utils.daq_utils import gauss2D
 
 class BeamSteeringController:
 
-    Nactuators = 2
-    axis = ['H', 'V']
+    axis = ['H', 'V', 'Theta']
+    Nactuators = len(axis)
     Nx = 256
     Ny = 256
     offset_x = 128
@@ -12,7 +12,7 @@ class BeamSteeringController:
     coeff = 0.01
     drift = False
 
-    def __init__(self, positions=None, wh=(40, 50), noise=0.1, amp=10):
+    def __init__(self, positions=None, wh=(10, 50), noise=0.1, amp=10):
         super().__init__()
         if positions is None:
             self.current_positions = dict(zip(self.axis, [0. for ind in range(self.Nactuators)]))
@@ -58,12 +58,32 @@ class BeamSteeringController:
     def gauss2D(self, x, y, x0, y0):
         Nx = len(x) if hasattr(x, '__len__') else 1
         Ny = len(x) if hasattr(y, '__len__') else 1
-        data = self.amp * gauss2D(x, x0, self.wh[0], y, y0, self.wh[1], 1) + self.noise * np.random.rand(Nx, Ny)
+        data = self.amp * gauss2D(x, x0, self.wh[0], y, y0, self.wh[1], 1, self.current_positions['Theta']) +\
+               self.noise * np.random.rand(Nx, Ny)
 
         return np.squeeze(data)
 
-    def get_data_output(self):
-        if self.data_mock is None:
-            self.set_Mock_data()
-        return self.data_mock[128, 128]
+    def get_data_output(self, data=None, data_dim='0D', x0=128, y0=128, integ='vert'):
+        """
+        Return generated data (2D gaussian) transformed depending on the parameters
+        Parameters
+        ----------
+        data: (ndarray) data as outputed by set_Mock_data
+        data_dim: (str) either '0D', '1D' or '2D'
+        x0: (int) if type is '0D" then get value of computed data at this position
+        y0: (int) if type is '0D" then get value of computed data at this position
+        integ: (str) either 'vert' or 'hor'. Valid if data_dim is '1D" then get value of computed data integrated either
+            vertically or horizontally
 
+        Returns
+        -------
+        numpy nd-array
+        """
+        if data is None:
+            data = self.set_Mock_data()
+        if data_dim == '0D':
+            return np.array([data[x0, y0]])
+        elif data_dim == '1D':
+            return np.mean(data, 0 if integ == 'vert' else 1)
+        elif data_dim == '2D':
+            return data
