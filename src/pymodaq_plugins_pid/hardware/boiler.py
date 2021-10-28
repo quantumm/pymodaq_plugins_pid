@@ -1,5 +1,5 @@
 from time import perf_counter
-from PyQt5.QtCore import QObject
+from qtpy.QtCore import QObject
 from numpy.random import random
 
 class BoilerController(QObject):
