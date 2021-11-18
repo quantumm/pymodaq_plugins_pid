@@ -5,7 +5,7 @@ from scipy.ndimage import center_of_mass
 class PIDModelBeamSteering(PIDModelGeneric):
     limits = dict(max=dict(state=True, value=100),
                   min=dict(state=True, value=-100),)
-    konstants = dict(kp=1, ki=0.000, kd=0.0000)
+    konstants = dict(kp=10, ki=0.000, kd=0.1000)
 
     setpoint_ini = [128, 128]
     setpoints_names = ['Xaxis', 'Yaxis']
@@ -14,7 +14,7 @@ class PIDModelBeamSteering(PIDModelGeneric):
     detectors_name = ['Camera']
 
     Nsetpoints = 2
-    params = [{'title': 'Threshold', 'name': 'threshold', 'type': 'float', 'value': 100.}]
+    params = [{'title': 'Threshold', 'name': 'threshold', 'type': 'float', 'value': 10.}]
 
     def __init__(self, pid_controller):
         super().__init__(pid_controller)
@@ -71,9 +71,7 @@ class PIDModelBeamSteering(PIDModelGeneric):
         return OutputToActuator(mode='rel', values=outputs)
 
 
-
-
 if __name__ == '__main__':
-    main("BeamSteering.xml")
+    main("BeamSteeringMockNoModel.xml")
 
 

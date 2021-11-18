@@ -124,7 +124,6 @@ class DAQ_Move_Boiler(DAQ_Move_base):
         # print(position)
         self.target_position = position
         self.controller.move_abs(self.target_position)
-        self.poll_moving()
 
     def move_Rel(self, position):
         """

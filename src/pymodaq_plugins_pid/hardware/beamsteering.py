@@ -35,7 +35,6 @@ class BeamSteeringController:
     def move_rel(self, position, axis):
         self.current_positions[axis] += position
 
-
     def get_xaxis(self):
         return np.linspace(0, self.Nx, self.Nx, endpoint=False)
 

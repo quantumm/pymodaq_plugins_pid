@@ -16,6 +16,7 @@ class DAQ_Move_BeamSteering(DAQ_Move_base):
     _controller_units = 'whatever'
     is_multiaxes = True
     stage_names = BeamSteeringController.axis
+    _epsilon = 1
 
     params = [  # elements to be added in order to control your custom stage
 
@@ -141,7 +142,7 @@ class DAQ_Move_BeamSteering(DAQ_Move_base):
         # print(position)
         self.target_position = position
         self.controller.move_abs(self.target_position, self.settings.child('multiaxes', 'axis').value())
-        self.poll_moving()
+
 
     def move_Rel(self, position):
         """
@@ -162,7 +163,7 @@ class DAQ_Move_BeamSteering(DAQ_Move_base):
         self.target_position = position + self.current_position
 
         self.controller.move_rel(position, self.settings.child('multiaxes', 'axis').value())
-        self.poll_moving()
+
 
     def move_Home(self):
         """
