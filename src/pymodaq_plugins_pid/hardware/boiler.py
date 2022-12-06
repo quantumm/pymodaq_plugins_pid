@@ -2,7 +2,6 @@ from time import perf_counter
 from qtpy.QtCore import QObject
 from numpy.random import random
 import numpy as np
-from pymodaq import Q_
 
 
 class BoilerController(QObject):
@@ -14,8 +13,8 @@ class BoilerController(QObject):
         super().__init__()
         self.startTimer(10)
         self._current_power = 0.
-        self._ellapsed_time = Q_(0., 's')
-        self._tau = Q_(1, 's')
+        self._ellapsed_time = 0.
+        self._tau = 1.
 
     def timerEvent(self, event):
         dt = perf_counter() - self._ellapsed_time
